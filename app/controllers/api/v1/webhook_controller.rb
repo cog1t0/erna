@@ -10,6 +10,7 @@ class Api::V1::WebhookController < ApplicationController
     end
 
     def webhook
+        logger.debug("===== start webhook")
         body = request.body.read
 
         signature = request.env['HTTP_X_LINE_SIGNATURE']
@@ -22,17 +23,44 @@ class Api::V1::WebhookController < ApplicationController
         events.each { |event|
             case event
             when Line::Bot::Event::Message
+                logger.debug("===== start Message")
                 case event.type
                 when Line::Bot::Event::MessageType::Text
+                    logger.debug("===== start Message Text")
                     message = {
                         type: 'text',
                         text: event.message['text']
                     }
                     client.reply_message(event['replyToken'], message)
+                when Line::Bot::Event::MessageType::location
+                    logger.debug("===== start Message Location")
+                    lat = event.message['latitude']
+                    lng = event.message['longitude']
+                    name = event.message['title']
+                    user_id = event.source.userId
+                    map = Map.new(user_id: user_id, lat: lat, lng: lng, name: name)
+                    if map.save!
+                        client.reply_message(event['replyToken'], "位置情報を登録しました https://erna-map.herokuapp.com/maps/#{map.id}")
+                    else
+                        client.reply_message(event['replyToken'], "エラーが発生しました")
+                    end
                 end
             end
         }
-        
+
         head :ok
     end
 end
+# [ { type: 'message',
+#     replyToken: '0db7ab4592bc4b32bf92cb8b705a486c',
+#     source:
+#      { userId: 'Ubc6ad91e177933c80cf44e01ded185b4', type: 'user' },
+#     timestamp: 1562536767965,
+#     message:
+#      { type: 'location',
+#        id: '10173951618888',
+#        title: '東川口駅',
+#        address: '戸塚1/東川口1 川口市, 埼玉県 日本',
+#        latitude: 35.87532421233835,
+#        longitude: 139.74461317062378 } } ]
+# message
