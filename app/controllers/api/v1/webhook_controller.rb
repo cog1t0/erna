@@ -37,7 +37,7 @@ class Api::V1::WebhookController < ApplicationController
                     lat = event.message['latitude']
                     lng = event.message['longitude']
                     name = event.message['title']
-                    user_id = event.source.userId
+                    user_id = event['source']['userId']
                     map = Map.new(user_id: user_id, lat: lat, lng: lng, name: name)
                     if map.save!
                         client.reply_message(event['replyToken'], "位置情報を登録しました https://erna-map.herokuapp.com/maps/#{map.id}")
