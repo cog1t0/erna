@@ -32,7 +32,7 @@ class Api::V1::WebhookController < ApplicationController
                         text: event.message['text']
                     }
                     client.reply_message(event['replyToken'], message)
-                when Line::Bot::Event::MessageType::location
+                when Line::Bot::Event::MessageType::Location
                     logger.debug("===== start Message Location")
                     lat = event.message['latitude']
                     lng = event.message['longitude']
