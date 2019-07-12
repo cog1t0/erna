@@ -40,9 +40,17 @@ class Api::V1::WebhookController < ApplicationController
                     user_id = event['source']['userId']
                     map = Map.new(user_id: user_id, lat: lat, lng: lng, name: name)
                     if map.save!
-                        client.reply_message(event['replyToken'], "位置情報を登録しました https://erna-map.herokuapp.com/maps/#{map.id}")
+                        message = {
+                            type: 'text',
+                            text: "位置情報を登録しました https://erna-map.herokuapp.com/maps/#{map.id}"
+                        }
+                        client.reply_message(event['replyToken'], message)
                     else
-                        client.reply_message(event['replyToken'], "エラーが発生しました")
+                        message = {
+                            type: 'text',
+                            text: "エラーが発生しました"
+                        }
+                        client.reply_message(event['replyToken'], message)
                     end
                 end
             end
