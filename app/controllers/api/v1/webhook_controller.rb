@@ -58,6 +58,21 @@ class Api::V1::WebhookController < ApplicationController
 
         head :ok
     end
+
+    def add_map
+        lat = params['latitude']
+        lng = params['longitude']
+        name = params['title']
+        user_id = params['user_id']
+        map = Map.new(user_id: user_id, lat: lat, lng: lng, name: name)
+        if map.save!
+            message = "位置情報を登録しました https://erna-map.herokuapp.com/maps/#{map.id}"
+        else
+            message = "エラーが発生しました"
+        end
+        json = {"message": message}
+        render json: json
+    end
 end
 # [ { type: 'message',
 #     replyToken: '0db7ab4592bc4b32bf92cb8b705a486c',
