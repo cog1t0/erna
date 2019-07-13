@@ -63,7 +63,7 @@ class Api::V1::WebhookController < ApplicationController
         logger.debug('======================= add_map start')
         lat = params['lat']
         lng = params['lng']
-        name = params['name']
+        name = ( params['name'] != 'undefined' ) ? params['name'] : '' 
         user_id = params['user_id']
         map = Map.new(user_id: user_id, lat: lat, lng: lng, name: name)
         logger.debug("======================= add_map map #{map.inspect}")
